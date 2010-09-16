@@ -28,6 +28,7 @@ explicit or implied, to the extent permissible by law.
 This program might, and would be buggy. Use it at your own risk.
 """
 
+sDefaultChangeLogCommand = "whatchanged"
 sDefaultSeparator = "~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~."
 
 sDefaultFormatSpec = """

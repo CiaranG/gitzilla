@@ -146,10 +146,12 @@ def post_receive():
   oBugRegex = get_bug_regex(siteconfig)
   sSeparator = get_or_default(siteconfig, sRepo, "separator")
   sFormatSpec = get_or_default(siteconfig, sRepo, "formatspec")
+  sChangeLogCommand = get_or_default(siteconfig, sRepo, "changelogcmd")
 
   bz_init = make_bz_init(siteconfig, bAllowDefaultAuth)
 
   gitzilla.hooks.post_receive(sBZUrl, sBZUser, sBZPasswd, sFormatSpec,
+                              sChangeLogCommand,
                               oBugRegex, sSeparator, logger, bz_init)
 
 

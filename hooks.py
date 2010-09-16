@@ -7,12 +7,12 @@ hooks - git hooks provided by gitzilla.
 import re
 import sys
 from utils import get_changes, init_bugzilla, get_bug_status, notify_and_exit
-from gitzilla import sDefaultSeparator, sDefaultFormatSpec, oDefaultBugRegex
+from gitzilla import sDefaultSeparator, sDefaultFormatSpec, sDefaultChangeLogCommand, oDefaultBugRegex
 from gitzilla import NullLogger
 import traceback
 
 
-def post_receive(sBZUrl, sBZUser=None, sBZPasswd=None, sFormatSpec=None, oBugRegex=None, sSeparator=None, logger=None, bz_init=None):
+def post_receive(sBZUrl, sBZUser=None, sBZPasswd=None, sFormatSpec=None, sChangeLogCommand=None, oBugRegex=None, sSeparator=None, logger=None, bz_init=None):
   """
   a post-recieve hook handler which extracts bug ids and adds the commit
   info to the comment. If multiple bug ids are found, the comment is added
@@ -55,6 +55,9 @@ def post_receive(sBZUrl, sBZUser=None, sBZPasswd=None, sFormatSpec=None, oBugReg
   if sFormatSpec is None:
     sFormatSpec = sDefaultFormatSpec
 
+  if sChangeLogCommand is None:
+    sChangeLogCommand = sDefaultChangeLogCommand
+
   if sSeparator is None:
     sSeparator = sDefaultSeparator
 
@@ -75,7 +78,7 @@ def post_receive(sBZUrl, sBZUser=None, sBZPasswd=None, sFormatSpec=None, oBugReg
     if sPrevRev is None:
       sPrevRev = sOldRev
     logger.debug("oldrev: '%s', newrev: '%s'" % (sOldRev, sNewRev))
-    asChangeLogs = get_changes(sOldRev, sNewRev, sFormatSpec, sSeparator)
+    asChangeLogs = get_changes(sOldRev, sNewRev, sFormatSpec, sSeparator, sChangeLogCommand)
 
     for sMessage in asChangeLogs:
       logger.debug("Considering commit:\n%s" % (sMessage,))
@@ -144,6 +147,7 @@ def update(oBugRegex=None, asAllowedStatuses=None, sSeparator=None, sBZUrl=None,
     bz_init = init_bugzilla
 
   sFormatSpec = sDefaultFormatSpec
+  sChangeLogCommand = sDefaultChangeLogCommand
 
   if asAllowedStatuses is not None:
     # sanity checking
@@ -162,7 +166,7 @@ def update(oBugRegex=None, asAllowedStatuses=None, sSeparator=None, sBZUrl=None,
   (sOldRev, sNewRev) = sys.argv[2:4]
   logger.debug("oldrev: '%s', newrev: '%s'" % (sOldRev, sNewRev))
 
-  asChangeLogs = get_changes(sOldRev, sNewRev, sFormatSpec, sSeparator)
+  asChangeLogs = get_changes(sOldRev, sNewRev, sFormatSpec, sSeparator, sChangeLogCommand)
   
   for sMessage in asChangeLogs:
     logger.debug("Checking for bug refs in commit:\n%s" % (sMessage,))
